@@ -1,0 +1,138 @@
+﻿    ﻿@using PagedList;
+    @using PagedList.Mvc;
+
+@model IPagedList<SquadCrud.Models.Employee>
+    @{
+        ViewBag.Title = "Index";
+    }
+
+    <h2>Index</h2>
+    <p>
+        @using (Html.BeginForm("Index", "Practical", FormMethod.Get))
+        {
+            @Html.TextBox("search", null, new { placeholder = "Search employee...", oninput = "filterEmployees(this.value)", @class = "form-control" })
+        }
+    </p>
+    <p>
+        @Html.ActionLink("Create New", "Create",null, new { @class = "btn btn-outline-primary" })
+    </p>
+    <table id="tblEmployees" class="table table-hover  text-center">
+        <thead class="table-light">
+            <tr>
+                <th>
+                    FirstName
+                </th>
+                <th>
+                    LastName
+                </th>
+                <th>
+                    Designation
+                </th>
+                <th>
+                    Department
+                </th>
+                <th>
+                    Salary
+                </th>
+                <th>
+                    JoiningDate
+                </th>
+                <th>
+                    ReportingPerson
+                </th>
+                <th>
+                    City
+                </th>
+                <th>Action</th>
+            </tr>
+            </thead>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Designation)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Department)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Salary)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.JoiningDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReportingPerson)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.City)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @class = "btn btn-outline-primary" }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.Id }, new { @class = "btn btn-outline-success" }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @class = "btn btn-outline-danger" })
+                    </td>
+                </tr>
+            }
+
+    </table>
+    <h5 class="pagedList">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
+        PagedListRenderOptions.PageNumbersOnly)
+    </h5>
+    <div class="pagedList" style="margin-left: 0px">
+        Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber)
+        of @Model.PageCount   @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+    </div>
+
+    <script>
+        function filterEmployees(search) {
+            $.ajax({
+                type: "POST",
+                url: "/Practical/Index",
+                data: "{search:'" + search + "'}",
+                contentType: "application/json",
+                dataType: "json",
+                success: function (searchedEmployees) {
+                    var table = $("#tblEmployees");
+                    table.find("tr:not(:first)").remove();
+                    $.each(searchedEmployees, function (i, employee) {
+
+
+                        var timestamp = parseInt(employee.JoiningDate.match(/\d+/)[0]);
+                        var date = new Date(timestamp);
+                        var year = date.getFullYear();
+                        var month = String(date.getMonth() + 1).padStart(2, '0');
+                        var day = String(date.getDate()).padStart(2, '0');
+                        var formattedDate = year + '-' + month + '-' + day;
+
+                        var table = $("#tblEmployees");
+                        var row = table[0].insertRow(-1);
+                        $(row).append("<td />");
+                        $(row).find("td").eq(0).html(employee.FirstName);
+                        $(row).append("<td />");
+                        $(row).find("td").eq(1).html(employee.LastName);
+                        $(row).append("<td />");
+                        $(row).find("td").eq(2).html(employee.Designation);
+                        $(row).append("<td />");
+                        $(row).find("td").eq(3).html(employee.Department);
+                        $(row).append("<td />");
+                        $(row).find("td").eq(4).html(employee.Salary);
+                        $(row).append("<td />");
+                        $(row).find("td").eq(5).html(formattedDate);
+                        $(row).append("<td />");
+                        $(row).find("td").eq(6).html(employee.ReportingPerson);
+                        $(row).append("<td />");
+                        $(row).find("td").eq(7).html("<a href='Edit/' + { employee.Id } > Edit </a > | <a href='Details/' + { employee.Id } > Details </a > | <a href = 'Delete/' + { employee.Id } > Delete</a >");
+                    });
+                }
+            })
+        }
+    </script>
