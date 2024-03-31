@@ -19,7 +19,6 @@ namespace MVCPractical14.Controllers
                 return Json(searchedEmployees);
             }
         }  
-        //dvvdvdfv
 
         //[HttpGet]
         //public ActionResult Index(int page = 1)
