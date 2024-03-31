@@ -18,7 +18,8 @@ namespace MVCPractical14.Controllers
                 var searchedEmployees = context.Employees.Where(e => e.FirstName.Contains(search)).ToList();
                 return Json(searchedEmployees);
             }
-        }
+        }  
+        //dvvdvdfv
 
         //[HttpGet]
         //public ActionResult Index(int page = 1)
